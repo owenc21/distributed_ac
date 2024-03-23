@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# project planning
+plans/
+
+# Cmake
+build/
+
+# vscode
+.vscode/
