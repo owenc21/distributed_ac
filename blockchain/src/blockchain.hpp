@@ -76,27 +76,76 @@ public:
 	/**
 	 * @brief Adds the given resource to the Blockchain
 	*/
-	int add_resource(uint64_t usr_id, std::vector<std::string> attributes, uint64_t size, std::string name);
+	int add_resource(uint64_t usr_id, std::vector<std::string> attributes, uint64_t size, std::string& name);
 
 	/**
 	 * @brief Adds the given attribute and users associated to the Blockchain
 	*/
-	int add_attribute(uint64_t usr_id, std::vector<std::string> users, uint64_t num_users, std::string attribute);
+	int add_attribute(uint64_t usr_id, std::vector<std::string> users, uint64_t num_users, std::string& attribute);
 
 	/**
 	 * @brief Adds the given user (name and ID) to the Blockchain metadata
 	*/
-	int add_user(uint64_t usr_id, std::string name);
+	int add_user(uint64_t usr_id, std::string& name);
+
+	/**
+	 * @brief Requests the given resource (if it exists)
+	*/
+	int request_resource(uint64_t usr_id, std::string& resource);
+
+	/**
+	 * @brief Returns the number total simulated size (in bytes) of blockchain (on-chain storage)
+	*/
+	uint64_t get_onchain_size() { return total_size; }
+
+	/**
+	 * @brief Returns the simulated size (in bytes) of blockchain ignoring resource size (off-chain storage)
+	*/
+	uint64_t get_offchain_size() { return non_payload_size; }
+
+	/**
+	 * @brief Returns the total number of resources added
+	*/
+	uint64_t get_total_resources() { return total_resources; }
+
+	/**
+	 * @brief Return the total number of requests made
+	*/
+	uint64_t get_total_requests() { return total_requests; }
+
+	/**
+	 * @brief Returns total number of accepted requests made
+	*/
+	uint64_t get_accepted_requests() { return accepted_requests; }
+
+	/**
+	 * @brief Returns total number of rejected requests made
+	*/
+	uint64_t get_rejected_requests() { return total_requests - accepted_requests; }
 
 private:
 	std::shared_ptr<block> head;
 	std::shared_ptr<block> next_free;
 	std::unordered_map<uint64_t, std::string> id2name;
 	std::unordered_map<std::string, uint64_t> name2id;
-	std::unordered_set<std::string> attributes;
+	std::unordered_set<std::string> attribute_list;
+	std::unordered_set<std::string> resources;
 	uint64_t next_id;
 	uint64_t total_size;
 	uint64_t non_payload_size;
+	uint64_t total_resources;
+	uint64_t total_requests;
+	uint64_t accepted_requests;
+
+	/**
+	 * @brief Gets block containing payload with specified name
+	*/
+	std::shared_ptr<block> get_block_by_payload_name(std::string& name);
+
+	/**
+	 * @brief Gets vector of users included in given attribute (if it exists)
+	*/
+	int get_attrbute(std::string& attribute, std::vector<std::string>& users);
 
 };
 
