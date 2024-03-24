@@ -77,7 +77,7 @@ Blockchain::Blockchain()
  * @param name		Name of resource beng added
  * @returns 		negaive integer on failure, non-negative integer on success
 */
-int Blockchain::add_resource(uint64_t usr_id, std::vector<std::string> attributes, uint64_t size, std::string& name){
+int Blockchain::add_resource(uint64_t usr_id, std::vector<std::string> attributes, uint64_t size, const std::string& name){
 	/* Check that attributes being added exist and that name of resource not accounted for */
 	if(resources.contains(name)) return -1;
 	for(std::string& attribute : attributes){
@@ -109,7 +109,7 @@ int Blockchain::add_resource(uint64_t usr_id, std::vector<std::string> attribute
  * @param attribute	Name of attribute (must be unique)
  * @returns			Negative integer on failure, Non-negative integer on success
 */
-int Blockchain::add_attribute(uint64_t usr_id, std::vector<std::string> users, uint64_t num_users, std::string& attribute){
+int Blockchain::add_attribute(uint64_t usr_id, std::vector<std::string> users, uint64_t num_users, const std::string& attribute){
 	/* Ensure name of attribure not already added and vector of users non-empty */
 	if(attribute_list.contains(attribute)) return -1;
 	if(users.empty()) return -1;
@@ -135,7 +135,7 @@ int Blockchain::add_attribute(uint64_t usr_id, std::vector<std::string> users, u
  * @param name		Name of user being added (must be unique)
  * @returns 		Negative integer on failure, Non-negative integer on success
 */
-int Blockchain::add_user(uint64_t usr_id, std::string& name){
+int Blockchain::add_user(uint64_t usr_id, const std::string& name){
 	/* Check if name to be inserted already exists */
 	if(name2id.find(name) == name2id.end()) return -1;
 
@@ -151,7 +151,7 @@ int Blockchain::add_user(uint64_t usr_id, std::string& name){
  * @param name	String of the payload name
  * @returns 	shared_ptr<block> of the block containing the payload with specified name (null if doesn't exist)
 */
-std::shared_ptr<block> Blockchain::get_block_by_payload_name(std::string& name){
+std::shared_ptr<block> Blockchain::get_block_by_payload_name(const std::string& name){
 	std::shared_ptr<block> to_return;
 	to_return = head;
 	while(to_return != nullptr){
@@ -180,7 +180,7 @@ std::shared_ptr<block> Blockchain::get_block_by_payload_name(std::string& name){
  * @param users			Reference to vector of strings to store users contained in attribute
  * @returns 			Negative integer on failure, Non-negative integer on success
 */
-int Blockchain::get_attrbute(std::string& attribute, std::vector<std::string>& users){
+int Blockchain::get_attrbute(const std::string& attribute, std::vector<std::string>& users){
 	/* Ensure that attribute exists */
 	if(!attribute_list.contains(attribute)) return -1;
 
@@ -205,7 +205,7 @@ int Blockchain::get_attrbute(std::string& attribute, std::vector<std::string>& u
  * @param resource	Name of resource beng requested
  * @returns			Non-negative integer if successful, negative integer if unsuccessful
 */
-int Blockchain::request_resource(uint64_t usr_id, std::string& resource){
+int Blockchain::request_resource(uint64_t usr_id, const std::string& resource){
 	total_requests++;
 	std::string user_name = id2name[usr_id];
 	std::shared_ptr<block> resource_block = get_block_by_payload_name(resource);

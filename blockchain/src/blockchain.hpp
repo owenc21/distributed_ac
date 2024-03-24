@@ -56,11 +56,11 @@ typedef struct node block;
 
 struct payload_struct{
 	payload_struct();
+	payload_struct(uint8_t payload_type);
 	payload_struct(uint8_t payload_type, std::vector<std::string> attributes, uint64_t size, std::string name);
 	uint8_t payload_type;
 	std::vector<std::string> attributes;
 	std::string name;
-	std::string desc;
 	uint64_t size;
 };
 
@@ -76,22 +76,22 @@ public:
 	/**
 	 * @brief Adds the given resource to the Blockchain
 	*/
-	int add_resource(uint64_t usr_id, std::vector<std::string> attributes, uint64_t size, std::string& name);
+	int add_resource(uint64_t usr_id, std::vector<std::string> attributes, uint64_t size, const std::string& name);
 
 	/**
 	 * @brief Adds the given attribute and users associated to the Blockchain
 	*/
-	int add_attribute(uint64_t usr_id, std::vector<std::string> users, uint64_t num_users, std::string& attribute);
+	int add_attribute(uint64_t usr_id, std::vector<std::string> users, uint64_t num_users, const std::string& attribute);
 
 	/**
 	 * @brief Adds the given user (name and ID) to the Blockchain metadata
 	*/
-	int add_user(uint64_t usr_id, std::string& name);
+	int add_user(uint64_t usr_id, const std::string& name);
 
 	/**
 	 * @brief Requests the given resource (if it exists)
 	*/
-	int request_resource(uint64_t usr_id, std::string& resource);
+	int request_resource(uint64_t usr_id, const std::string& resource);
 
 	/**
 	 * @brief Returns the number total simulated size (in bytes) of blockchain (on-chain storage)
@@ -140,12 +140,12 @@ private:
 	/**
 	 * @brief Gets block containing payload with specified name
 	*/
-	std::shared_ptr<block> get_block_by_payload_name(std::string& name);
+	std::shared_ptr<block> get_block_by_payload_name(const std::string& name);
 
 	/**
 	 * @brief Gets vector of users included in given attribute (if it exists)
 	*/
-	int get_attrbute(std::string& attribute, std::vector<std::string>& users);
+	int get_attrbute(const std::string& attribute, std::vector<std::string>& users);
 
 };
 
