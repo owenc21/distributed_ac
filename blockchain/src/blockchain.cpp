@@ -137,7 +137,7 @@ int Blockchain::add_attribute(uint64_t usr_id, std::vector<std::string> users, u
 */
 int Blockchain::add_user(uint64_t usr_id, const std::string& name){
 	/* Check if name to be inserted already exists */
-	if(name2id.find(name) == name2id.end()) return -1;
+	if(name2id.find(name) != name2id.end()) return -1;
 
 	name2id[name] = usr_id;
 	id2name[usr_id] = name;

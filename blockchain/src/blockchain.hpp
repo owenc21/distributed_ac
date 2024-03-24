@@ -33,22 +33,6 @@
 
 /* Type definitions */
 
-/**
- * @brief Definition for Block within Blockchain
-*/
-struct node{
-	node() = delete;
-	node(uint8_t event, uint8_t status, uint64_t id, uint64_t block_id);
-	std::shared_ptr<struct node> next;
-	std::shared_ptr<block_payload> payload;
-	std::time_t time_stamp;
-	uint8_t event;
-	uint8_t status;
-	uint64_t id;
-	uint64_t block_id;
-};
-
-typedef struct node block;
 
 /**
  * @brief Definition for payload struct within block
@@ -65,6 +49,23 @@ struct payload_struct{
 };
 
 typedef struct payload_struct block_payload;
+
+/**
+ * @brief Definition for Block within Blockchain
+*/
+struct node{
+	node() = delete;
+	node(uint8_t event, uint8_t status, uint64_t id, uint64_t block_id);
+	std::shared_ptr<struct node> next;
+	std::shared_ptr<block_payload> payload;
+	std::time_t time_stamp;
+	uint8_t event;
+	uint8_t status;
+	uint64_t id;
+	uint64_t block_id;
+};
+
+typedef struct node block;
 
 /* Blockchain declaration */
 
