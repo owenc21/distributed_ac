@@ -33,6 +33,16 @@ block_payload::payload_struct()
 }
 
 /**
+ * Constructor for payload
+ * Accepts payload type, default initializes rest of fields
+*/
+block_payload::payload_struct(uint8_t payload_type)
+	: payload_type(payload_type), size(0)
+{
+
+}
+
+/**
  * Construct for payload
  * Accepts arguments and initializes given fields
 */
@@ -200,12 +210,24 @@ int Blockchain::request_resource(uint64_t usr_id, std::string& resource){
 	std::string user_name = id2name[usr_id];
 	std::shared_ptr<block> resource_block = get_block_by_payload_name(resource);
 
+	/* Add record of request to blockchain */
+	next_free->next = std::make_shared<block>(BLOCK_EVT_REQUEST, BLOCK_STATUS_REJECT, usr_id, next_id++);
+	next_free = next_free->next;
+	next_free->next = nullptr;
+	next_free->payload = std::make_shared<block_payload>(PAYLOAD_REQ);
+
+	/* Exclude payload from size calculations for purposes of simulation */
+	uint64_t cur_block_size = sizeof(next_free) + sizeof(next_free->payload);
+	total_size += cur_block_size;
+	non_payload_size += cur_block_size;
+
 	/* Check to see if user is in any of the given attributes specified within resource's smart contract */	
 	for(std::string& attribute : resource_block->payload->attributes){
 		std::vector<std::string> users_in_attribute;
 		if(get_attrbute(attribute, users_in_attribute) < 0) continue;
 		/* Check if user exists in the attribute */
 		if(std::find(users_in_attribute.begin(), users_in_attribute.end(), user_name) != users_in_attribute.end()){
+			next_free->status = BLOCK_STATUS_ACCEPT;
 			accepted_requests++;
 			return 0;
 		}
