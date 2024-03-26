@@ -95,6 +95,11 @@ public:
 	int request_resource(uint64_t usr_id, const std::string& resource);
 
 	/**
+	 * @brief Audits entire blockchain by printing summary of each block to the given stream
+	*/
+	void audit(std::ostream& outStream);
+
+	/**
 	 * @brief Returns the number total simulated size (in bytes) of blockchain (on-chain storage)
 	*/
 	uint64_t get_onchain_size() { return total_size; }
@@ -123,6 +128,16 @@ public:
 	 * @brief Returns total number of rejected requests made
 	*/
 	uint64_t get_rejected_requests() { return total_requests - accepted_requests; }
+
+	/**
+	 * @brief Returns the associated name of a given user id
+	*/
+	std::string id2user(uint64_t usr_id) { return id2name[usr_id]; } 
+
+	/**
+	 * @brief Returns associted user id of a given name
+	*/
+	uint64_t user2id(const std::string& name) { return name2id[name]; }
 
 private:
 	std::shared_ptr<block> head;

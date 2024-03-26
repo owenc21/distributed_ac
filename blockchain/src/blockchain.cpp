@@ -63,8 +63,8 @@ Blockchain::Blockchain()
 	next_free = head;
 	head->payload = std::make_shared<block_payload>();
 	next_id = 1;
-	total_size = sizeof(head) + sizeof(head->payload);
-	non_payload_size = sizeof(head) + sizeof(head->payload);
+	total_size = sizeof(*head) + sizeof(*head->payload);
+	non_payload_size = sizeof(*head) + sizeof(*head->payload);
 }
 
 /**
@@ -91,7 +91,7 @@ int Blockchain::add_resource(uint64_t usr_id, std::vector<std::string> attribute
 	next_free->payload = std::make_shared<block_payload>(PAYLOAD_SMARTC, attributes, size, name);
 
 	/* Include block and resource size for total size */
-	uint64_t cur_block_size = sizeof(next_free) + sizeof(next_free->payload);
+	uint64_t cur_block_size = sizeof(*next_free) + sizeof(*next_free->payload);
 	total_size += cur_block_size + size;
 	non_payload_size += cur_block_size;
 
@@ -121,7 +121,7 @@ int Blockchain::add_attribute(uint64_t usr_id, std::vector<std::string> users, u
 	next_free->payload = std::make_shared<block_payload>(PAYLOAD_ATTRIBUTE, users, num_users, attribute);
 
 	/* Exclude payload from size calculations for purposes of simulation */
-	uint64_t cur_block_size = sizeof(next_free) + sizeof(next_free->payload);
+	uint64_t cur_block_size = sizeof(*next_free) + sizeof(*next_free->payload);
 	total_size += cur_block_size;
 	non_payload_size += cur_block_size;
 
@@ -217,7 +217,7 @@ int Blockchain::request_resource(uint64_t usr_id, const std::string& resource){
 	next_free->payload = std::make_shared<block_payload>(PAYLOAD_REQ);
 
 	/* Exclude payload from size calculations for purposes of simulation */
-	uint64_t cur_block_size = sizeof(next_free) + sizeof(next_free->payload);
+	uint64_t cur_block_size = sizeof(*next_free) + sizeof(*next_free->payload);
 	total_size += cur_block_size;
 	non_payload_size += cur_block_size;
 
@@ -234,4 +234,82 @@ int Blockchain::request_resource(uint64_t usr_id, const std::string& resource){
 	}
 
 	return -1;
+}
+
+/**
+ * Iterates over entire blockchain
+ * Outputs summary of each block to given stream
+ * 
+ * @param outStream		Reference to stream to which to audit to
+*/
+void Blockchain::audit(std::ostream& outStream){
+	std::shared_ptr<block> traverse = head;
+
+	uint64_t block_num = 0;
+	while(traverse != nullptr){
+		outStream << "BLOCK NUMBER " << block_num << std::endl;
+		switch(traverse->event){
+			case BLOCK_EVT_START:
+				outStream << "Event: Start" << std::endl;
+				break;
+			case BLOCK_EVT_INSERT:
+				outStream << "Event: Insert" << std::endl;
+				break;
+			case BLOCK_EVT_REQUEST:
+				outStream << "Event: Request" << std::endl;
+				break;
+			default:
+				outStream << "Event: Unknown (ERROR)" << std::endl; 
+		}		
+		outStream << "Added by User: " << traverse->id << " (" << id2name[traverse->id] << ")" << std::endl;
+		switch(traverse->status){
+			case BLOCK_STATUS_ACCEPT:
+				outStream << "Status: ACCEPTED" << std::endl;
+				break;
+			case BLOCK_STATUS_REJECT:
+				outStream << "Status: REJECTED" << std::endl;
+				break;
+			default:
+				outStream << "Status: UNKOWN (ERROR)" << std::endl;
+		}
+		outStream << "Timestamp: " << std::asctime(std::localtime(&traverse->time_stamp));
+		std::shared_ptr<block_payload> payload = traverse->payload;
+		switch(payload->payload_type){
+			case PAYLOAD_EMPTY:
+				outStream << "Payload: Empty" << std::endl;
+				outStream << "Payload Size: 0" << std::endl;
+				break;
+			case PAYLOAD_SMARTC:
+				outStream << "Payload: Smart Contract" << std::endl;
+				outStream << "File Name: " << payload->name << std::endl;
+				outStream << "Roles allowed: ";
+				for(std::string& role : payload->attributes){
+					outStream << " " << role << " ";
+				}
+				outStream << std::endl;
+				outStream << "File Size (bytes): " << payload->size << std::endl;
+				break;
+			case PAYLOAD_REQ:
+				outStream << "Payload: Request" << std::endl;
+				outStream << "Payload Size: 0" << std::endl;
+				break;
+			case PAYLOAD_ATTRIBUTE:
+				outStream << "Payload: Role" << std::endl;
+				outStream << "Users allowed: ";
+				for(std::string& user: payload->attributes){
+					outStream << " " << user << " ";
+				}
+				outStream << std::endl;
+				outStream << "Number of Users: " << payload->size << std::endl;
+				break;
+			default:
+				outStream << "Unkown Payload (ERROR)" << std::endl;
+		}
+		outStream << "Block Size (no payload; bytes): " << sizeof(*traverse) << std::endl;
+		outStream << "Block Size (total; bytes): " << sizeof(*traverse) + sizeof(*payload) << std::endl;
+		outStream << std::endl;
+
+		block_num++;
+		traverse = traverse->next;
+	}
 }
