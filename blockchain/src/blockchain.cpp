@@ -306,7 +306,6 @@ void Blockchain::audit(std::ostream& outStream){
 				outStream << "Unkown Payload (ERROR)" << std::endl;
 		}
 		outStream << "Block Size (no payload; bytes): " << sizeof(*traverse) << std::endl;
-		outStream << "Block Size (total; bytes): " << sizeof(*traverse) + sizeof(*payload) << std::endl;
 		outStream << std::endl;
 
 		block_num++;
